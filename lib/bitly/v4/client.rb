@@ -28,8 +28,7 @@ module Bitly
 
       def post(method, opts={})
         opts[:headers] ||= {}
-        opts[:headers]["Authorization"] = "Bearer #{@access_token}"
-        opts[:headers]["Content-Type"] = "application/json"
+        opts[:headers].merge!(default_headers)
 
         begin
           response = self.class.post(method, opts)
@@ -46,8 +45,7 @@ module Bitly
 
       def get(method, opts={})
         opts[:headers] ||= {}
-        opts[:headers]["Authorization"] = "Bearer #{@access_token}"
-        opts[:headers]["Content-Type"] = "application/json"
+        opts[:headers].merge!(default_headers)
 
         begin
           response = self.class.get(method, opts)
@@ -60,6 +58,13 @@ module Bitly
         else
           raise BitlyError.new(response["message"], response.code)
         end
+      end
+
+      def default_headers
+        headers ||= {}
+        headers["Authorization"] = "Bearer #{@access_token}"
+        headers["Content-Type"] = "application/json"
+        headers
       end
     end
   end
