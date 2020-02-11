@@ -3,6 +3,7 @@ require 'rubygems'
 require 'shoulda'
 require 'flexmock/minitest'
 require 'webmock/minitest'
+require 'minitest/byebug' if ENV['DEBUG']
 
 require File.join(File.dirname(__FILE__), '..', 'lib', 'bitly')
 
