@@ -15,6 +15,11 @@ module Bitly
         return Bitly::V4::Url.new(self, response)
       end
 
+      def clicks(short_url)
+        response = get("/bitlinks/#{short_url}/clicks")
+        return Bitly::V4::Url.new(self, response)
+      end
+
       private
 
       def timeout=(timeout=nil)
@@ -28,6 +33,24 @@ module Bitly
 
         begin
           response = self.class.post(method, opts)
+        rescue Timeout::Error
+          raise BitlyTimeout.new("Bitly didn't respond in time", "504")
+        end
+
+        if [200, 201].include? response.code
+          return response
+        else
+          raise BitlyError.new(response["message"], response.code)
+        end
+      end
+
+      def get(method, opts={})
+        opts[:headers] ||= {}
+        opts[:headers]["Authorization"] = "Bearer #{@access_token}"
+        opts[:headers]["Content-Type"] = "application/json"
+
+        begin
+          response = self.class.get(method, opts)
         rescue Timeout::Error
           raise BitlyTimeout.new("Bitly didn't respond in time", "504")
         end
