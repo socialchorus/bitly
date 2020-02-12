@@ -16,7 +16,7 @@ module Bitly
       end
 
       def clicks(short_url)
-        response = get("/bitlinks/#{short_url}/clicks")
+        response = get("/bitlinks/#{short_url}/clicks/summary")
         return Bitly::V4::Url.new(self, response)
       end
 
@@ -49,6 +49,7 @@ module Bitly
 
         begin
           response = self.class.get(method, opts)
+          puts response
         rescue Timeout::Error
           raise BitlyTimeout.new("Bitly didn't respond in time", "504")
         end
