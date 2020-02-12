@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Bitly
   module V4
     # The client is the main part of this gem. You need to initialize the client with your
@@ -91,24 +89,23 @@ module Bitly
             # builds the results array in the same order as the input
             rs[input.index(url['long_url'])] = Bitly::V4::Url.new(self, url)
             # remove the key from the original array, in case the same hash/url was entered twice
-            input[input.index(url['long_url'])] = nil
           else
             rs[input.index(url['long_url'])] = Bitly::V4::MissingUrl.new(url)
-            input[input.index(url['long_url'])] = nil
           end
+          input[input.index(url['long_url'])] = nil
         end
         results.length > 1 ? results : results[0]
       end
 
       # Expands either a short link or hash and gets the referrer data for that link
-      #
+
       # This method does not take an array as an input
       def referrers(input)
         get_single_method('referrers', input)
       end
 
       # Expands either a short link or hash and gets the country data for that link
-      #
+
       # This method does not take an array as an input
       def countries(input)
         get_single_method('countries', input)
