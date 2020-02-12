@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Bitly
   module V4
     class MissingUrl
