@@ -21,14 +21,14 @@ module Bitly
           @created_at = Time.at opts['created_at'] if opts['created_at']
           @aggregate_link = opts['aggregate_link']
           @referrers = opts['referrers'].inject([]) do |results, referrer|
-            results << Bitly::V3::Referrer.new(referrer)
+            results << Bitly::V4::Referrer.new(referrer)
           end if opts['referrers']
           @countries = opts['countries'].inject([]) do |results, country|
-            results << Bitly::V3::Country.new(country)
+            results << Bitly::V4::Country.new(country)
           end if opts['countries']
           if opts['clicks'] && opts['clicks'][0].is_a?(Hash)
             @clicks_by_day = opts['clicks'].inject([]) do |results, day|
-              results << Bitly::V3::Day.new(day)
+              results << Bitly::V4::Day.new(day)
             end
           else
             @clicks_by_minute = opts['clicks']
