@@ -57,11 +57,25 @@ module Bitly
       private
 
       def post(path_uri, opts = {})
-        requests(:post, path_uri, opts)
+        request = requests(:post, path_uri, opts)
+
+        request.on_complete do |response|
+          unless response.success?
+            raise BitlyError.new(response.return_message, response.code)
+          end
+        end
+        request
       end
 
       def get(path_uri, opts = {})
-        requests(:get, path_uri, opts)
+        request = requests(:get, path_uri, opts)
+
+        request.on_complete do |response|
+          unless response.success?
+            raise BitlyError.new(response.return_message, response.code)
+          end
+        end
+        request
       end
 
       def default_headers
