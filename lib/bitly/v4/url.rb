@@ -28,22 +28,22 @@ module Bitly
         @parse_response ||= if @data.is_a?(Array)
                               @data.map do |datum|
                                 {
-                                  response: JSON.parse(datum.response.response_body),
-                                  request: datum.response.request
+                                  response: JSON.parse(datum[:request].response.response_body),
+                                  request: datum[:metadata]
                                 }
                               end
                             else
                               {
-                                response: JSON.parse(@data.response_body),
-                                request: @data.request
+                                response: JSON.parse(@data[:request].response_body),
+                                request: @data[:metadata]
                               }
                             end
       end
 
       def marshall(input_hash)
         {
-          short_url: input_hash[:response]['link'],
-          long_url: input_hash[:response]['long_url'],
+          short_url: input_hash[:response]['link'] || input_hash[:request][:short_url],
+          long_url: input_hash[:response]['long_url'] || input_hash[:request][:long_url],
           user_clicks: input_hash[:response]['total_clicks']
         }
       end

@@ -14,11 +14,11 @@ module Bitly
 
         request = if long_url.is_a?(Array)
                     request_array = long_url.map do |url|
-                      post('/shorten', query.call(url))
+                      { request: post('/shorten', query.call(url)), metadata: { long_url: url } }
                     end
                     parallel_requests(request_array)
                   else
-                    post('/shorten', query.call(long_url)).run
+                    { request: post('/shorten', query.call(long_url)).run, metadata: { long_url: long_url } }
                   end
 
         Bitly::V4::Url.new(self, request)
@@ -29,11 +29,11 @@ module Bitly
 
         request = if short_url.is_a?(Array)
                     request_array = short_url.map do |url|
-                      get(link.call(url), opts)
+                      { request: get(link.call(url), opts), metadata: { short_url: url } }
                     end
                     parallel_requests(request_array)
                   else
-                    get(link.call(short_url), opts).run
+                    { request: get(link.call(short_url), opts).run, metadata: {short_url: short_url} }
                   end
 
         Bitly::V4::Url.new(self, request)
@@ -44,11 +44,11 @@ module Bitly
 
         request = if short_url.is_a?(Array)
                     request_array = short_url.map do |url|
-                      get(link.call(url), opts)
+                      { request: get(link.call(url), opts), metadata: { short_url: url } }
                     end
                     parallel_requests(request_array)
                   else
-                    get(link.call(short_url), opts).run
+                    { request: get(link.call(short_url), opts).run, metadata: { short_url: short_url} }
                   end
 
         Bitly::V4::Url.new(self, request)
@@ -97,9 +97,9 @@ module Bitly
 
       def parallel_requests(request_array)
         hydra = Typhoeus::Hydra.new(max_concurrency: 15)
-        requests = request_array.map do |request|
-          hydra.queue(request)
-          request
+        requests = request_array.map do |elem|
+          hydra.queue(elem[:request])
+          elem
         end
         hydra.run
         requests
