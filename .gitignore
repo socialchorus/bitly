@@ -2,3 +2,4 @@ pkg
 doc
 Gemfile.lock
 TAGS
+.byebug_history

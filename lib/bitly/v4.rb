@@ -1,4 +1,4 @@
-require 'httparty'
+require 'typhoeus'
 require 'cgi'
 require 'oauth2'
 
