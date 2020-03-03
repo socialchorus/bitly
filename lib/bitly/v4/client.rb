@@ -29,11 +29,11 @@ module Bitly
 
         request = if short_url.is_a?(Array)
                     request_array = short_url.map do |url|
-                      { request: get(link.call(url), opts), metadata: { short_url: url } }
+                      { request: get(link.call(to_bitly_id(url)), opts), metadata: { short_url: url } }
                     end
                     parallel_requests(request_array)
                   else
-                    { request: get(link.call(short_url), opts).run, metadata: {short_url: short_url} }
+                    { request: get(link.call(to_bitly_id(short_url)), opts).run, metadata: {short_url: short_url} }
                   end
 
         Bitly::V4::Url.new(self, request)
@@ -103,6 +103,15 @@ module Bitly
         end
         hydra.run
         requests
+      end
+
+      def to_bitly_id(url)
+        if url.start_with?('http://') || url.start_with?('https://')
+          uri = URI.parse(url)
+          "#{uri.host}#{uri.path}"
+        else
+          url
+        end
       end
     end
   end
