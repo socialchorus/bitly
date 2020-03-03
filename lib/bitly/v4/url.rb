@@ -41,11 +41,16 @@ module Bitly
       end
 
       def marshall(input_hash)
+        response = input_hash[:response]
+        request = input_hash[:request]
+
         {
-          short_url: input_hash[:response]['link'] || input_hash[:request][:short_url],
-          long_url: input_hash[:response]['long_url'] || input_hash[:request][:long_url],
-          user_clicks: input_hash[:response]['total_clicks']
-        }
+          short_url: response['link'] || request[:short_url],
+          long_url: response['long_url'] || request[:long_url],
+          user_clicks: response['total_clicks'],
+          error: response['message'],
+          code: response['error_code']
+        }.reject { |_, value| value.nil? || value.empty? }
       end
     end
   end

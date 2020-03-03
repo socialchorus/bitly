@@ -61,7 +61,7 @@ module Bitly
 
         request.on_complete do |response|
           unless response.success?
-            raise BitlyError.new(response.return_message, response.code)
+            BitlyError.new(response.return_message, response.code)
           end
         end
         request
@@ -72,7 +72,7 @@ module Bitly
 
         request.on_complete do |response|
           unless response.success?
-            raise BitlyError.new(response.return_message, response.code)
+            BitlyError.new(response.return_message, response.code)
           end
         end
         request
