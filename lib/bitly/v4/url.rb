@@ -28,24 +28,35 @@ module Bitly
         @parse_response ||= if @data.is_a?(Array)
                               @data.map do |datum|
                                 {
-                                  response: JSON.parse(datum[:request].response.response_body),
+                                  response: json_parse(datum[:request].response.response_body),
                                   request: datum[:metadata]
                                 }
                               end
                             else
                               {
-                                response: JSON.parse(@data[:request].response_body),
+                                response: json_parse(@data[:request].response_body),
                                 request: @data[:metadata]
                               }
                             end
       end
 
       def marshall(input_hash)
+        response = input_hash[:response]
+        request = input_hash[:request]
+
         {
-          short_url: input_hash[:response]['link'] || input_hash[:request][:short_url],
-          long_url: input_hash[:response]['long_url'] || input_hash[:request][:long_url],
-          user_clicks: input_hash[:response]['total_clicks']
-        }
+          short_url: response['link'] || request[:short_url],
+          long_url: response['long_url'] || request[:long_url],
+          user_clicks: response['total_clicks'],
+          error: response['message'],
+          code: response['code']
+        }.reject { |_, value| value.nil? || value.to_s.empty? }
+      end
+
+      def json_parse(input)
+        JSON.parse(input)
+      rescue JSON::ParserError
+        { 'message' => 'unexpected error' }
       end
     end
   end

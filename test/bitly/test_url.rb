@@ -164,7 +164,7 @@ class TestUrl < Minitest::Test
       end
     end
 
-    context 'clicks' do
+    context 'v4#success' do
       context "with a hash" do
         setup do
           @client = Bitly::V4::Client.new(login, api_key)
@@ -185,21 +185,21 @@ class TestUrl < Minitest::Test
         should "return shortened url" do
           shorten = @client.shorten('https://google.com')
 
-          expected_hash = { short_url: "http://bit.ly/39graKZ", long_url: "https://google.com/", user_clicks: nil }
+          expected_hash = { short_url: "http://bit.ly/39graKZ", long_url: "https://google.com/" }
           assert_equal  expected_hash, shorten.results
         end
 
         should "return clicks" do
           clicks = @client.clicks('bit.ly/39graKZ')
 
-          expected_hash = { short_url: "bit.ly/39graKZ", long_url: nil, user_clicks: nil }
+          expected_hash = { short_url: "bit.ly/39graKZ" }
           assert_equal  expected_hash, clicks.results
         end
 
         should "return clicks summary" do
           clicks_summary = @client.clicks_summary('bit.ly/39graKZ')
 
-          expected_hash = { short_url: 'bit.ly/39graKZ', long_url: nil, user_clicks: 1 }
+          expected_hash = { short_url: 'bit.ly/39graKZ', user_clicks: 1 }
           assert_equal  expected_hash, clicks_summary.results
         end
 
@@ -207,6 +207,31 @@ class TestUrl < Minitest::Test
           clicks_summary = @client.clicks_summary('https://bit.ly/39graKZ')
 
           expected_hash = { short_url: 'https://bit.ly/39graKZ', long_url: nil, user_clicks: 1 }
+          assert_equal  expected_hash, clicks_summary.results
+        end
+      end
+    end
+
+    context 'v4#failure' do
+      context "with a hash" do
+        setup do
+          @client = Bitly::V4::Client.new(login, api_key)
+
+          stub_request(:get, "https://api-ssl.bitly.com/v4/bitlinks/Y&%5E$%5E%5E$@%5E@%5E#%5E/clicks/summary").
+            with(
+              headers: {
+                    'Authorization'=>'Bearer test_account',
+                    'Content-Type'=>'application/json',
+                    'Expect'=>'',
+                    'User-Agent'=>'Typhoeus - https://github.com/typhoeus/typhoeus'
+              }).
+            to_return(status: 404, body: '{:short_url=>"Y&^$^^$@^@^#^", :error=>"unexpected error"}', headers: {})
+        end
+
+        should "return unexpected error" do
+          clicks_summary = @client.clicks_summary('Y&^$^^$@^@^#^')
+
+          expected_hash = { short_url: "Y&^$^^$@^@^#^", error: "unexpected error" }
           assert_equal  expected_hash, clicks_summary.results
         end
       end
