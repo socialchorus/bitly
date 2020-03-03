@@ -50,7 +50,7 @@ module Bitly
           user_clicks: response['total_clicks'],
           error: response['message'],
           code: response['error_code']
-        }.reject { |_, value| value.nil? || value.empty? }
+        }.reject { |_, value| value.nil? || value.to_s.empty? }
       end
     end
   end
