@@ -202,6 +202,13 @@ class TestUrl < Minitest::Test
           expected_hash = { short_url: 'bit.ly/39graKZ', long_url: nil, user_clicks: 1 }
           assert_equal  expected_hash, clicks_summary.results
         end
+
+        should "return clicks summary when passing a url" do
+          clicks_summary = @client.clicks_summary('https://bit.ly/39graKZ')
+
+          expected_hash = { short_url: 'https://bit.ly/39graKZ', long_url: nil, user_clicks: 1 }
+          assert_equal  expected_hash, clicks_summary.results
+        end
       end
     end
   end
